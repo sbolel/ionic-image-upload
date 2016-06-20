@@ -39,6 +39,7 @@ angular.module('ionic-image-upload', ['ionic', 'ngCordova'])
   var imageUploader = new ImageUploader();
   $scope.file = {};
   $scope.upload = function() {
+    console.debug('Trying upload');
     imageUploader.push($scope.file, function(data){
       console.log('File uploaded Successfully', $scope.file, data);
       $scope.uploadUri = data.url;
