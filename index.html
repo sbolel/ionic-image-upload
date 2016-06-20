@@ -7,7 +7,8 @@
     <script src="lib/ionic/js/ionic.bundle.min.js"></script>
     <script src="lib/angular-file-upload/dist/angular-file-upload.min.js"></script>
     <script src="lib/ngCordova/dist/ng-cordova.min.js"></script>
-    <script src="lib/s3-image-uploader/dist/image-uploader.bundle.min.js"></script>
+    <script src="lib/aws-sdk/dist/aws-sdk.min.js"></script>
+    <script src="lib/s3-image-uploader/src/image-uploader.js"></script>
     <script src="cordova.js"></script>
     <script src="js/app.js"></script>
     <link href="lib/ionic/css/ionic.css" rel="stylesheet">
@@ -20,9 +21,10 @@
       </ion-header-bar>
       <ion-content ng-controller="UploadController">
         <input class="bottom-marg-15" type="file" name="file" file="file">
-        <button class="button button-small button-full button-positive" ng-disabled="file.size&amp;&amp;false || uploadProgress&gt;0" ng-click="upload()" ng-cloak="">Upload</button>
-        <img class="fit" ng-if="uploadUri" ng-src="{{uploadUri}}">
-        <a ng-href="{{uploadUri}}" ng-bind="uploadUri"></a>
+        <button class="button button-small button-full button-positive" ng-disabled="!file.size || uploadProgress > 0" ng-click="upload()" ng-cloak="">Upload</button>
+        <span ng-if="error" ng-bind="result.error" style="color:red;font-weight:bold" ></span>
+        <img class="fit" ng-if="result.url" ng-src="{{result.url}}">
+        <small><a ng-href="{{result.url}}" ng-bind="result.url"></a></small>
       </ion-content>
     </ion-pane>
   </body>

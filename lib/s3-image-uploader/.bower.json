@@ -1,6 +1,6 @@
 {
   "name": "s3-image-uploader",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "JavaScript Image Uploader Library for use with Amazon S3",
   "license": "MIT",
   "authors": [
@@ -28,13 +28,13 @@
     ".es*"
   ],
   "homepage": "https://github.com/sbolel/image-uploader",
-  "_release": "1.0.1",
+  "_release": "1.1.0",
   "_resolution": {
     "type": "version",
-    "tag": "v1.0.1",
-    "commit": "97cb2efcebc837364ef3e482160f90af5a984e72"
+    "tag": "v1.1.0",
+    "commit": "0c01c918a56559dbcea270bf0bc0f444856cb05d"
   },
   "_source": "https://github.com/sbolel/image-uploader.git",
-  "_target": "^1.0.0",
+  "_target": "^1.1.0",
   "_originalSource": "s3-image-uploader"
 }
