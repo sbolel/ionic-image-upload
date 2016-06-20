@@ -22,7 +22,7 @@ angular.module('ionic-image-upload', ['ionic', 'ngCordova'])
       el.bind('change', function(event){
         var files = event.target.files;
         var file = files[0];
-        if(file.size>0){
+        if(file && typeof(file) !== undefined && file.size > 0){
           scope.file = file;
           scope.$parent.file = file;
         } else {
@@ -35,14 +35,25 @@ angular.module('ionic-image-upload', ['ionic', 'ngCordova'])
   };
 })
 
-.controller('UploadController', function ($scope){
+.controller('UploadController', function ($scope, $ionicLoading){
   var imageUploader = new ImageUploader();
+  $scope.result = {};
   $scope.file = {};
   $scope.upload = function() {
-    imageUploader.push($scope.file, function(data){
-      console.log('File uploaded Successfully', $scope.file, data);
-      $scope.uploadUri = data.url;
-      $scope.$digest();
+    $ionicLoading.show({
+      template: 'Uploading...'
     });
+    imageUploader.push($scope.file)
+      .then((data) => {
+        console.debug('Upload complete. Data:', data);
+        $ionicLoading.hide();
+        $scope.result.url = data.url;
+        $scope.$digest();
+      })
+      .catch((err) => {
+        console.error(err);
+        $ionicLoading.hide();
+        $scope.result.error = err;
+      });
   };
 })
