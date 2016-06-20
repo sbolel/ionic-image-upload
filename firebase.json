@@ -1,0 +1,9 @@
+{
+  "firebase": "ionic-image-upload",
+  "public": "www",
+  "ignore": [
+    "firebase.json",
+    "**/.*",
+    "**/node_modules/**"
+  ]
+}

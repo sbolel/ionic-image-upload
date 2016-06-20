@@ -1,0 +1,58 @@
+{
+  "name": "ionic-image-upload",
+  "version": "1.0.0",
+  "description": "An Ionic Plugin for Uploading Images to Amazon S3",
+  "private": true,
+  "license": "MIT",
+  "authors": {
+    "name": "Sinan Bolel",
+    "email": "sinanbolel@gmail.com",
+    "url": "https://sinanbolel.com"
+  },
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/sbolel/ionic-image-upload"
+  },
+  "homepage": "http://market.ionic.io/plugins/image-upload",
+  "issues": "https://github.com/sbolel/ionic-image-upload/issues",
+  "engines": {
+    "node": ">=5.7.0",
+    "npm": ">=3.9.5"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "bower": "^1.7.9",
+    "grunt": "^1.0.1",
+    "grunt-contrib-uglify": "^1.0.1",
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.0",
+    "gulp-minify-css": "^1.2.4",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^2.3.2",
+    "gulp-util": "^3.0.7",
+    "shelljs": "^0.7.0"
+  },
+  "cordovaPlugins": [
+    "cordova-plugin-device",
+    "cordova-plugin-console",
+    "cordova-plugin-whitelist",
+    "cordova-plugin-splashscreen",
+    "cordova-plugin-statusbar",
+    "ionic-plugin-keyboard",
+    "cordova-plugin-camera"
+  ],
+  "cordovaPlatforms": [
+    "ios",
+    "android",
+    {
+      "platform": "android",
+      "version": "",
+      "locator": "android"
+    },
+    {
+      "platform": "ios",
+      "version": "",
+      "locator": "ios"
+    }
+  ]
+}

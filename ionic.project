@@ -1,0 +1,10 @@
+{
+  "name": "ionic-image-upload",
+  "app_id": "c44105a6",
+  "proxies": [
+    {
+      "path": "/config",
+      "proxyUrl": "https://ionic-image-upload.firebaseio.com/_config.json"
+    }
+  ]
+}
