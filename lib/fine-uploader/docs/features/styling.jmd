@@ -1,0 +1,282 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Styling" %}
+{% block sidebar %}
+{{ api_links(options=['messages', 'messages-ui', 'showConfirm-ui', 'showMessage-ui', 'showPrompt-ui']) }}
+{% endblock %}
+{% block content %}
+{% markdown %}
+# Styling {: .page-header }
+
+{{ alert(
+"""Templating changed drastically in version 4.0.  If you are upgrading from a 3.x version to a 4.x version
+you will want to read the [upgrading to 4.x document](../upgrading-to-4.html) as well.""", "warn") }}
+
+{{ alert(
+"""If you are making use of ES6 modules, CommonJS, or AMD to import Fine Uploader into your project, please see
+the [modules feature page](modules.html) for information on the name changes to the stylesheets in the distributed
+lib directory.""") }}
+
+
+This document applies to Fine Uploader UI mode only, and aims to help you customize the default UI using
+the built-in templating feature.
+
+### Templates
+
+Some defaults templates are bundled with each version in the `templates` directory.  In the future,
+alternate templates may be included as well.  Note that you must include a template in your markup/document
+when using Fine Uploader UI.  Everything should work just fine if you simply use the provided templates as is,
+without changing anything.  However, you can certainly customize any of the default templates to match your
+web application's look and feel.
+
+The templates are, by default, included in a `<script>` tag with the `type` attribute set to "text/template".
+The template does not have to be included in a `<script>` tag.  For example, you may instead include the template
+in a hidden `<div>`.  Fine Uploader simple needs to be able to locate the template element container in the document.
+
+{{ alert(
+"""The CSS classes included in template elements that end with '-selector' are used internally by Fine Uploader UI
+for the purposes of element selection only.  No styles are attached to these classes.  Other CSS classes that DO NOT
+end with '-selector' are used to style these elements.  You can certainly remove the non-selector class if you
+want to contribute your own styles, but you should only remove the selector class if you no longer want Fine
+Uploader UI to track/address the associated template element."""
+)}}
+
+#### default.html
+
+The "default" template bundled with Fine Uploader contains, more or less, a very basic UI for Fine Uploader. There are
+no thumbnails/previews generated when using this template. You may use the legacy fine-uploader.css file or the new/modern
+fine-uploader-new.css file.
+
+This template also renders a visible drop zone, but only with the fine-uploader-new.css file. The fine-uploader-new.css
+file will include a customizable "drop files" message in the background of the drop zone if the current browser supports
+file dropping.
+
+#### simple-thumbnails.html
+
+This template is similar to "default", except it will render previews of images and placeholders for non-previewable images
+(provided you make preview images accessible via the `template.placeholders` option). There are several instances of this
+template in use (both customized and non-customized) at http://fineuploader.com/demos. You may use the legacy fine-uploader.css
+file or the new/modern fine-uploader-new.css file.
+
+This template also renders a visible drop zone, but only with the fine-uploader-new.css file. The fine-uploader-new.css
+file will include a customizable "drop files" message in the background of the drop zone if the current browser supports
+file dropping.
+
+#### gallery.html
+
+This is a template that represents each submitted file as a "tile". You can see a couple examples of this template in action
+on http://fineuploader.com/demo. The S3 example notably uses a modified version of the gallery template. You *must* use the
+fine-uploader-gallery.css file, and you also must be sure to include all ".gif" files packaged with the uploader.
+The gallery view uses icons to represent buttons (such as retry/pause/continue/delete/cancel) in almost all cases.
+
+Like the fine-uploader-new.css file, the fine-uploader-gallery.css file will include a "drop files" message in the background
+of the visible drop zone if the current browser supports file dropping.
+
+When using the fine-uploader-gallery.css file, you *must* ensure that the container element for your template contains a
+"qq-gallery" class. This is already included in the proper location in the gallery.html template bundled with the library.
+
+
+#### Re-styling the progress bar
+
+Don't like [the default progress bar](progress-bars.html#per-file-progress) included with Fine Uploader's CSS file?
+No problem!  You can easily use, for example, a Bootstrap-styled progress bar.
+Just [include Bootstrap](http://getbootstrap.com/) in your project and change this:
+
+```html
+<div class="qq-progress-bar-container-selector">
+    <div class="qq-progress-bar-selector qq-progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+</div>
+```
+
+To this:
+
+```html
+<div class="progress qq-progress-bar-container-selector">
+    <div class="bar qq-progress-bar-selector" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+</div>
+```
+
+You can do the same for the [total progress bar](progress-bars.html#total-progress).
+
+
+#### Omitting a portion of the template that does not apply to your app
+
+You can omit any element of the template that does not apply to your uploader except for:
+
+* The parent div that contains the contents of the template (qq-uploader-selector element)
+* The file list container element (qq-upload-list-selector element)
+* The immediate child container of the file list container element.  You can certainly change the type of tag here though.
+
+Otherwise, any portion of the template can simply be omitted.  For example, if you don't want to utilize the edit
+filename feature, simply omit any elements with class names that start with qq-edit-filename.  If you don't want
+to have the delete button appear after a successful upload, omit the qq-upload-delete-selector element.  If you don't
+want the progress bar at all, omit the qq-progress-bar elements, etc, etc.
+
+
+#### Changing any default text
+
+Any of the text nodes in the template can be changed to match your language or preferences.  In some cases, Fine
+Uploader UI dynamically sets text, such as with the qq-upload-status-text-selector and qq-upload-size-selector
+elements.  See the [`text` option](../api/options-ui.html#text-option) for adjusting these types of strings.
+
+
+#### Re-arranging the order of the template elements
+
+You may also change the order of the elements in the template.  Note that you should not move file-related elements
+out of the qq-upload-list-selector container or it's immediate child container though.
+
+
+#### Moving the file list to an alternate location in the DOM
+
+If you would like to locate the file list (contents of the qq-upload-list-selector element) elsewhere in your document,
+you may do so via the [`listElement` option](../api/options-ui.html) which allows you to specify an existing
+container element where Fine Uploader UI will render the file list item elements.
+
+
+#### Customizing the buttons/links
+
+It is trivial to re-style the delete, cancel, retry, and upload buttons.  For example, you can utilize Bootstrap's
+button styling to re-skin the upload button by changing this:
+
+```html
+<div class="qq-upload-button-selector qq-upload-button">
+    <div>Upload a file</div>
+</div>
+```
+
+to this:
+
+```html
+<div class="qq-upload-button-selector btn">
+    <div>Upload a file</div>
+</div>
+```
+
+Note that you cannot use a `<button>` element if you plan on supporting Internet Explorer, as this will not trigger
+the file chooser dialog.
+
+
+#### Including any other custom elements in your template
+
+Suppose you want to include a link to the uploaded file next to each file item element.  You can modify the template
+to include a styled anchor link, hidden initially, and then show the anchor and set its `href` attribute
+in your `complete` event handler, once you know the path of the file on your server.
+
+To do this, the file list portion of the template can be modified to include this link as the last child:
+
+```html
+<ul class="qq-upload-list-selector qq-upload-list" aria-live="polite" aria-relevant="additions removals">
+    <li>
+        ...
+        <button type="button" class="view-btn hide btn">View</button>
+    </li>
+</ul>
+```
+
+Your `complete` event handler would look something like this:
+
+```javascript
+var uploader = new qq.FineUploader({
+    /* other required config options left out for brevity */
+
+    callbacks: {
+        onComplete: function(id, name, response) {
+            var serverPathToFile = response.filePath,
+                fileItem = this.getItemByFileId(id);
+
+            if (response.success) {
+                var viewBtn = qq(fileItem).getByClass("view-btn")[0];
+
+                viewBtn.setAttribute("href", serverPathToFile);
+                qq(viewBtn).removeClass("hide");
+            }
+        }
+    }
+});
+```
+
+{{ alert(
+"""You cannot specify an `Element` as an option value if it only exists in a template.  This is due to the
+fact that the options are evaluated before the template is rendered.  For example, you cannot specify an
+[extra button](extra-buttons.html) that is declared in a template."""
+)}}
+
+
+
+### `classes` option
+
+A `classes` option allows you to change some default class names that Fine Uploader may add to template
+elements dynamically/on-demand.  The following `classes` option properties exist in Fine Uploader UI mode:
+
+{% macro classes_table(rows, title=None) -%}
+{{ code_table(("Property Name", "Default CSS", "Description"), rows, title) }}
+{%- endmacro %}
+
+{{ classes_table(
+    (
+        ("buttonFocus", "qq-upload-button-focus", "Added to any upload button tracked by Fine Uploader when the
+        button receives focus."),
+        ("buttonHover", "qq-upload-button-hover", "Added to any upload button tracked by Fine Uploader when a
+        mouse cursor hovers over the button."),
+        ("dropActive", "qq-upload-drop-area-active", "Added to the drop area container when an item
+        has entered the drop zone."),
+        ("editable", "qq-editable", "Added to the file name element when the file name may be edited."),
+        ("fail", "qq-upload-fail", "Added to the file item container after a completely failed upload."),
+        ("hide", "qq-hide", "Added whenever an item should no longer be visible."),
+        ("retryable", "qq-upload-retryable", "Added to the file item container after a failed upload attempt
+        if the item is eligible for a retry."),
+        ("retrying", "qq-upload-retrying", "Added to the file item container during a retry attempt."),
+        ("success", "qq-upload-success", "Added to the file item container after a successful upload."),
+    )
+) }}
+
+
+### Dialogs
+
+Fine Uploader UI mode -- by default -- uses the native browser implementations
+of alerts, confirms, and messages to show user notifications when necessary.
+More than likely, you are going to want to override these. To provide your own
+dialogs just provide your own functions for the `showMessage`,  `showConfirm`,
+and/or `showPrompt` options.
+
+{{ alert(
+"""For a tutorial on integrating the third-party modal dialog library [alertify.js](http://fabien-d.github.io/alertify.js/)
+with Fine Uploader's dialogs check out: [Alertify your Notifications and Dialogs](http://wp.me/p3FpYP-5I)."""
+)}}
+
+* `showMessage: function(message) {...}` - You may want to change the default alert dialog implementation and messages
+as you see fit.  This is possible by overriding the `showMessage` function option.  The default `showMessage` function
+simply invokes `alert` with the message text.  One instance in which this is used is when the user attempts to select an
+invalid file for upload.  There are general message types with default text that can be overriden as well.
+
+* `showConfirm: function(message) {...}` - This function is used to display a confirm dialog.  One
+such feature that optionally uses this is the `deleteFile` feature. Note that **this
+is a promissory callback**, meaning it requires a [promise](async-tasks-and-promises.html) to
+be returned.The default implementation uses `window.confirm`, but you
+may override this with something a bit nicer, if you choose.  The okCallback will be executed if the user clicks "ok" and the
+`cancelCallback` if the user clicks "cancel".  The `cancelCallback` is optional, but the `okCallback` is required.
+
+* `showPrompt: function(message, defaultValue) {...}` - This function is used to prompt the user for a value.  Note that **this
+is a promissory callback**, meaning it requires a [promise](async-tasks-and-promises.html) to be returned.  The [promise documentation](features/async-tasks-and-promises.html)
+includes a simple example that overrides this default implementation using bootbox.  The default implementation here simply
+uses `window.prompt`.
+
+
+#### Support for the HTML 5.1 `<dialog>` element
+Fine Uploader UI v5.2 will include support for [the `<dialog>` element, which is part of the HTML 5.1 specification](http://blog.teamtreehouse.com/a-preview-of-the-new-dialog-element).
+For any browsers that support this element, you may replace all message, confirm, and prompt alerts with
+`<dialog>` elements.  Fine Uploader will look in your template for the presence of a `<dialog>` element for
+each type of message and render it at the appropriate time instead of the `alert` dialog if it finds a match
+AND if the current browser has support for the `<dialog>` element.
+
+Please see [one of the template file examples](https://github.com/FineUploader/fine-uploader/tree/master/client/html/templates)
+for an example of the `<dialog>` elements that must be present in your template if you'd like to make use of
+this new native dialog in your uploader instance.  Including the proper markup in your template is all that is
+required of you - Fine Uploader will take care of the showing, hiding, and all other logic required to
+determine if a `<dialog>` should be used.  Fine Uploader will default back to an `alert` if the browser does
+not support the `<dialog>` element.  If a `<dialog>` element is rendered, it will be displayed as a modal dialog.
+
+You may also continue to override the `showMessage`, `showConfirm`, and/or `showPrompt` methods to display your
+own dialog instead.
+
+{% endmarkdown %}
+{% endblock %}

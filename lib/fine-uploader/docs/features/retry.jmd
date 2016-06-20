@@ -1,0 +1,29 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Retrying Uploads" %}
+{% block sidebar %}
+{{ api_links(options=['retry', 'retry-ui'], methods=['retry'], events=['autoRetry', 'manualRetry']) }}
+{% endblock %}
+{% block content %}
+{% markdown %}
+
+# Retrying Uploads {: .page-header }
+
+Fine Uploader will automatically attempt to retry an upload if the `enableAuto` option is set to `true`:
+
+```javascript
+var uploader = new qq.FineUploader({
+    /* other required config options left out for brevity */
+
+    retry: {
+        enableAuto: true
+    },
+    callbacks: {
+        onRetry: function(id, name, attemptNumber) {
+            ...
+        }
+    }
+});
+```
+
+{% endmarkdown %}
+{% endblock %}

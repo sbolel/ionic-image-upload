@@ -1,0 +1,52 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Validation" %}
+{% block sidebar %}
+{{ api_links(options=['validation'], events=['submit', 'validate', 'validateBatch'], methods=['setItemLimit']) }}
+{% endblock %}
+{% block content %}
+{% markdown %}
+
+# Validation {: .page-header }
+
+Fine Uploader's validation abilities allow integrators to strictly define
+what sorts of files can and can not be uploaded.
+
+For each file, the `validate` event callback is invoked, allowing you to enforce your own custom rules.  Then, Fine
+Uploader's built-in validators (defined in the options) execute.  If you need access to more information
+(such as the actual file), you can declare a `submit` event callback handler instead. When `submit` is called,
+an ID is available for the file, and you can address it using any of the other API methods that require a file ID.
+
+If the `validation.stopOnFirstInvalidFile` option is enabled, Fine Uploader will stop processing files once an invalid
+file has been encountered.
+
+Fine Uploader's built-in validators allow you to limit based on file extension, number of files, file size, and
+image dimensions.  See the `validation` option for more details about these built-in validators.
+
+## Validation on File Size
+
+Size validation is available in File API browsers only. Size can be restricted
+via the `sizeLimit` or `minSizeLimit` options in the `validation` settings.
+
+## Image Validation
+
+As of 4.1, the ability to restrict submitted images based on width and height is possible.  See the `validation.image`
+option for specifics.  Keep in mind that this feature was created with processed images in mind, and not images
+sent directly from a camera.  Some browsers may natively report width and height swapped for JPEGs (from cameras) based
+on the orientation of the camera.  Those uploading pictures directly from cameras have no control over the
+dimensions of the image, so it doesn't seem to make much sense to impose these restrictions if you expect your users
+to upload images directly via a camera.  In that case, it likely makes more sense to allow the user to scale the image
+first (before submitting the file) or simply impose a file size restriction.
+
+Also, this feature is dependant on the preview generation feature, and therefore is only supported in modern browsers.
+Check the browser support matrix or the `qq.supportedFeatures.imageValidation` flag for more specific information.
+If image dimension validation is important to your application, you will also need a server-side fallback to account
+for older browsers and TIFFs (if allowed, since TIFFs are only previewable in Safari).
+
+## Custom Validation Rules
+You can further limit files using your own custom rules by including validation logic in a `validate` or `validateBatch`
+callback event handler.  Your handlers can return `false` to reject the file or files outright.  If you need to perform an
+async operation to determine if the file is valid, you can return a promise, and either resolve or reject the promise
+once the validity of the file is known.  See the `validate` and `validateBatch` documentation for more details.
+
+{% endmarkdown %}
+{% endblock %}

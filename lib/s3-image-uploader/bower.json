@@ -1,0 +1,31 @@
+{
+  "name": "s3-image-uploader",
+  "version": "1.0.1",
+  "description": "JavaScript Image Uploader Library for use with Amazon S3",
+  "license": "MIT",
+  "authors": [
+    "Sinan Bolel <sinanbolel@gmail.com>"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sbolel/image-uploader"
+  },
+  "keywords": [
+    "image",
+    "file",
+    "upload",
+    "aws",
+    "s3"
+  ],
+  "main": "src/image-uploader.js",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "Gruntfile.js",
+    ".es*"
+  ]
+}

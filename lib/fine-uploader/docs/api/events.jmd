@@ -1,0 +1,585 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Events" %}
+{% block title %}Events - Fine Uploader Documentation{% endblock %}
+
+{% block sidebar %}
+<div id="sidebar-accordion" class="accordion"></div>
+{% endblock %}
+
+{% block js_head %}
+<script src="{{ ASSETS }}/js/sidebar.js"></script>
+{% endblock %}
+
+{% block js_footer %}
+<script type="text/javascript">
+$(document).ready(function() {
+    renderEventsSidebarNav(['all']);
+});
+</script>
+{% endblock %}
+
+{% block content %}
+{% markdown %}
+
+[status]: ../features/statistics-and-status-updates.html
+
+# Events {: .page-header }
+
+Fine Uploader's event system enables integrators to execute any operations at
+almost any point in the upload process. Knowing how these callbacks work, and
+when they are called, is crucial to unlocking the full potential of
+Fine Uploader.
+
+### Syntax
+
+The following syntax is the correct way to define event handlers:
+
+```
+callbacks: {
+    onDelete: function(id) {
+        // ...
+    },
+    onDeleteComplete: function(id, xhr, isError) {
+        //...
+    }
+}
+```
+
+{% endmarkdown %}
+<div class="events-all">
+
+{{ api_event("autoRetry", "onAutoRetry", "Called before each automatic retry attempt for a failed item.",
+    [
+        {
+            "name": "id",
+            "type": "Integer",
+            "description": "The current file's id."
+        },
+        {
+            "name": "name",
+            "type": "String",
+            "description": "The current file's name."
+        },
+        {
+            "name": "attemptNumber",
+            "type": "Integer",
+            "description": "The number of retry attempts for the current file so far."
+        }
+    ])
+}}
+
+{{ api_event("cancel", "onCancel",
+"""Called when the item has been canceled. Return `false` to prevent the
+upload from being canceled. Also can return a promise if non-blocking
+work is required here. Calling `failure()` on the promise is equivalent to
+returning `false`. If using a Promise, then processing of the cancel request
+will be deferred until the promise is fullfilled. Since there is no way to
+'pause' the upload in progress while waiting for the promise to be fullfilled
+the upload may actually complete until the promise has actually be fullfilled.
+""",
+    [
+        {
+            "name": "id",
+            "type": "Integer",
+            "description": "The current file's id."
+        },
+        {
+            "name": "name",
+            "type": "String",
+            "description": "The current file's name."
+        },
+    ])
+}}
+
+{{ api_event("complete", "onComplete",
+"""Called when the item has finished uploading.
+
+The `responseJSON` will contain the raw response from the server including the
+'success' property which indicates whether the upload succeeded.""",
+    [
+        {
+            "name": "id",
+            "type": "Integer",
+            "description": "The current file's id."
+        },
+        {
+            "name": "name",
+            "type": "String",
+            "description": "The current file's name."
+        },
+        {
+            "name": "responseJSON",
+            "type": "Object",
+            "description": "The raw response from the server."
+        },
+        {
+            "name": "xhr",
+            "type": "XMLHttpRequest or XDomainRequest",
+            "description": "The object used to make the request."
+        }
+    ])
+}}
+
+{{ api_event("allComplete", "onAllComplete",
+"Called when all submitted items have reached a point of termination.  A file has reached a point of termination
+if it has been cancelled, rejected, or uploaded (failed or successful).  For example, if a file in the group is paused,
+and all other files in the group have uploaded successfully the allComplete event will not be invoked for the group
+until that paused file is either continued and completes the uploading process, or canceled.  This event will not be
+called if all files in the group have been cancelled or rejected (i.e. if none of the files have reached a
+[status][status] of `qq.status.UPLOAD_SUCCESSFUL` or `qq.status.UPLOAD_FAILED`).",
+    [
+        {
+            "name": "succeeded",
+            "type": "Array",
+            "description": "IDs of all files in the group that have uploaded successfully ([status][status] = `qq.status.UPLOAD_SUCCESSFUL`)."
+        },
+        {
+            "name": "failed",
+            "type": "Array",
+            "description": "IDs of all files in the group that have failed ([status][status] = `qq.status.UPLOAD_FAILED`)."
+        }
+    ])
+}}
+
+{{ api_event("delete", "onDelete", "Called just before a delete request is sent for the associated item. Note that this is _not_ the correct callback to influence the delete request. To do that, use the [onSubmitDelete callback](#submitDelete) instead.",
+    [
+        {
+            "name": "id",
+            "type": "Integer",
+            "description": "The current file's id."
+        }
+    ])
+}}
+
+{{ api_event("deleteComplete", "onDeleteComplete", "Called just after receiving a response from the server for a delete file request.",
+    [
+        {
+            "name": "id",
+            "type": "Integer",
+            "description": "The current file's id."
+        },
+        {
+            "name": "xhr",
+            "type": "XMLHttpRequest or XDomainRequest",
+            "description": "The object used to make the request."
+        },
+        {
+            "name": "isError",
+            "type": "Boolean",
+            "description": "`true` if there has been an error, `false` otherwise."
+        },
+    ])
+}}
+
+{{ api_event("error", "onError", "Called whenever an exceptional condition occurs (see [Handling Errors](../features/handling-errors.html))",
+    [
+        {
+            "name": "id",
+            "type": "Integer",
+            "description": "The current file's id."
+        },
+        {
+            "name": "name",
+            "type": "String",
+            "description": "The current file's name."
+        },
+        {
+            "name": "errorReason",
+            "type": "String",
+            "description": "The reason for the current error."
+        },
+        {
+            "name": "xhr",
+            "type": "XMLHttpRequest or XDomainRequest",
+            "description": "The object used to make the request."
+        }
+    ])
+}}
+
+{{ api_event("manualRetry", "onManualRetry",
+"""Called before each manual retry attempt.
+
+Return `false` to prevent this an all future retry attempts on the associated item.""",
+    [
+        {
+            "name": "id",
+            "type": "Integer",
+            "description": "The current file's id."
+        },
+        {
+            "name": "name",
+            "type": "String",
+            "description": "The current file's name."
+        },
+    ])
+}}
+
+{{ api_event("pasteReceived", "onPasteReceived",
+"""Called when a pasted image has been received (before upload).
+
+The pasted image is represented as a `Blob`. Also can return a promise if non-blocking work is required here. If using a Promise the value of the success parameter must be the name to associate with the pasted image. If the associated attempt is marked a failure then you should include a string explaining the reason in your failure callback for the Promise.
+
+**Note:**
+
+The `promptForName` option, if `true`, will effectively wipe away any custom implementation of this callback. The two are not meant to be used together. This callback is meant to provide an alternative means to provide a name for a pasted image. If you are using Fine Uploader Core mode then you can display your own prompt for the name by overriding the default implementation of this callback.
+""",
+    [
+        {
+            "name": "blob",
+            "type": "Blob",
+            "description": "An object encapsulating the image pasted from the clipboard."
+        },
+    ])
+}}
+
+{{ api_event("progress", "onProgress",
+""" Called during the upload, as it progresses, but only for the AJAX uploader.
+
+For chunked uploads, this will be called for each chunk.
+
+Useful for implementing a progress bar.
+""",
+    [
+        {
+            "name": "id",
+            "type": "Integer",
+            "description": "The current file's id."
+        },
+        {
+            "name": "name",
+            "type": "String",
+            "description": "The current file's name"
+        },
+        {
+            "name": "uploadedBytes",
+            "type": "Integer",
+            "description": "The number of bytes that have been uploaded so far."
+        },
+        {
+            "name": "totalBytes",
+            "type": "Integer",
+            "description": "The total number of bytes that comprise this file."
+        }
+    ])
+}}
+
+{{ api_event("resume", "onResume",
+""" Called just before an upload is resumed. See the [`uploadChunk`](#uploadChunk)
+ event for more info on the `chunkData` object.
+""",
+    [
+        {
+            "name": "id",
+            "type": "Integer",
+            "description": "The current file's id."
+        },
+        {
+            "name": "name",
+            "type": "String",
+            "description": "The current file's name"
+        },
+        {
+            "name": "chunkData",
+            "type": "Object",
+            "description": "The chunk that will be sent next when file upload resumes."
+        },
+    ])
+}}
+
+{{ api_event("sessionRequestComplete", "onSessionRequestComplete",
+""" Invoked when a session request has completed.  The `response` will be either an `Array` containing the response data
+or `null` if the response did not contain valid JSON.  The `success` parameter will be `false` if ANY of the file items
+represented in the response could not be parsed (due to bad syntax, missing name/UUID property, etc).
+
+See the [Initial File List feature page](../features/session.html) for more details.
+""",
+    [
+        {
+            "name": "response",
+            "type": "Array",
+            "description": "The raw response data."
+        },
+        {
+            "name": "success",
+            "type": "Boolean",
+            "description": "Indicates whether success has been achieved or not."
+        },
+        {
+            "name": "xhrOrXdr",
+            "type": "XMLHttpRequest or XDomainRequest",
+            "description": "The raw request."
+        },
+    ])
+}}
+
+{{ api_event("statusChange", "onStatusChange",
+""" Invoked whenever the status changes for any item submitted by the uploader.
+
+The status values correspond to those found in the `qq.status` object. For reference:
+
+* `SUBMITTED`
+* `QUEUED`
+* `UPLOADING`
+* `UPLOAD_RETRYING`
+* `UPLOAD_FAILED`
+* `UPLOAD_SUCCESSFUL`
+* `CANCELED`
+* `REJECTED`
+* `DELETED`
+* `DELETING`
+* `DELETE_FAILED`
+* `PAUSED`
+
+""",
+    [
+        {
+            "name": "id",
+            "type": "Integer",
+            "description": "The current file's id."
+        },
+        {
+            "name": "oldStatus",
+            "type": "String",
+            "description": "The previous item status."
+        },
+        {
+            "name": "newStatus",
+            "type": "String",
+            "description": "The new status of the item."
+        }
+    ])
+}}
+
+{{ api_event("submit", "onSubmit",
+""" Called when the item has been selected and is a candidate for uploading.
+
+This does not mean the item is going to be uploaded. Return `false` to prevent
+submission to the uploader. A promise can be used if non-blocking work is
+required. Processing of this item is deferred until the promise is fullfilled.
+If a promise is returned, a call to failure is the same as returning `false`.
+""",
+    [
+        {
+            "name": "id",
+            "type": "Integer",
+            "description": "The current file's id."
+        },
+        {
+            "name": "name",
+            "type": "String",
+            "description": "The current file's name."
+        },
+    ])
+}}
+
+{{ api_event("submitDelete", "onSubmitDelete",
+""" Called before an item has been marked for deletion has been submitted to
+the uploader.
+
+A promise can be used if non-blocking work is required. Processing of
+this item is deferred until the promise is fullfilled. If a promise is
+returned, a call to failure is the same as returning `false`.
+
+Use this callback to influence the delete request. For example, you can change the
+custom parameters sent with the underlying delete request using the [`setDeleteParams` API method](methods.html#setDeleteFileParams).
+""",
+    [
+        {
+            "name": "id",
+            "type": "Integer",
+            "description": "The current file's id."
+        },
+    ])
+}}
+
+{{ api_event("submitted", "onSubmitted",
+"""Called when the item has been successfully submitted to the uploader.
+
+The file will upload immediately if there is a) at least one free connection
+(see: [`maxConnections` option](options.html#maxconnections)) and b) `autoUpload`
+is set to `true` (see [`autoUpload` option](options.html#autoupload)).
+
+The callback is invoked after the 'submit' event is handled without returning a
+`false` value. In Fine Uploader Core mode it is usually safe to assume that
+the associated elements in the UI representing the associated file have already
+been added to the DOM immediately before this callback is invoked.
+
+""",
+    [
+        {
+            "name": "id",
+            "type": "Integer",
+            "description": "The current file's id."
+        },
+        {
+            "name": "name",
+            "type": "String",
+            "description": "THe current file's name."
+        },
+    ])
+}}
+
+{{ api_event("totalProgress", "onTotalProgress",
+""" Called during a batch of uploads, as they progress, but only for the AJAX uploader.  This represents the total
+progress of all files in the batch.
+
+Useful for implementing an aggregate progress bar.
+""",
+    [
+        {
+            "name": "totalUploadedBytes",
+            "type": "Integer",
+            "description": "The number of bytes that have been uploaded so far in this batch."
+        },
+        {
+            "name": "totalBytes",
+            "type": "Integer",
+            "description": "The total number of bytes that comprise all files in the batch."
+        }
+    ])
+}}
+
+{{ api_event("upload", "onUpload", "Called just before an item begins uploading to the server.",
+    [
+        {
+            "name": "id",
+            "type": "Integer",
+            "description": "The current file's id."
+        },
+        {
+            "name": "name",
+            "type": "String",
+            "description": "The current file's name."
+        },
+    ])
+}}
+
+{{ api_event("uploadChunk", "onUploadChunk",
+""" Called just before a chunk request is sent.
+
+The `chunkData` object, which is passed into the 'uploadChunk' event handler, has 4 properties:
+
+* `partIndex` - the 0-based index of the associated partition.
+* `startByte` - the byte offset of the current chunk.
+* `endByte` - the last byte of the current chunk.
+* `totalParts` - the total number of partitions associated with the `File` or `Blob`.
+
+""",
+    [
+        {
+            "name": "id",
+            "type": "Integer",
+            "description": "The current file's id."
+        },
+        {
+            "name": "name",
+            "type": "String",
+            "description": "The current file's name."
+        },
+        {
+            "name": "chunkData",
+            "type": "Object",
+            "description": "An object encapsulating the current chunk of data about to be uploaded."
+        },
+    ])
+}}
+
+{{ api_event("uploadChunkSuccess", "onUploadChunkSuccess",
+""" This is similar to the [`complete` event](#complete), except it is invoked after each chunk
+has been **successfully** uploaded.
+
+See the [`uploadChunk` event](#uploadChunk) for more information on the `chunkData` object.
+""",
+    [
+        {
+            "name": "id",
+            "type": "Integer",
+            "description": "The current file's id."
+        },
+        {
+            "name": "chunkData",
+            "type": "Object",
+            "description": "An object encapsulating the current chunk of data about to be uploaded."
+        },
+        {
+            "name": "responseJSON",
+            "type": "Object",
+            "description": "The raw response from the server."
+        },
+        {
+            "name": "xhr",
+            "type": "XMLHttpRequest or XDomainRequest",
+            "description": "The object used to make the request."
+        }
+    ])
+}}
+
+{{ api_event("validate", "onValidate",
+""" Called once for each selected, dropped, or `addFiles` submitted file.
+
+This callback is always invoked before the default Fine Uploader validators
+execute.
+
+This event will not be called if you return `false` in your `validateBatch` event
+handler, or if the `stopOnFirstInvalidFile` validation option is `true` and
+the `validate` event handler has returned `false` for an item.
+
+A promise can be used if non-blocking work is required.
+Processing of this item is deferred until the promise is fullfilled.
+If a promise is returned, a call to `failure` is the same as returning `false`.
+
+A buttonContainer element will be passed as the last argument, provided the file was
+submitted using a Fine Uploader tracked button.
+
+The `blobData` object has two properties: `name` and `size`. The `size` property will be undefined for browsers without File API support.
+
+""",
+    [
+        {
+            "name": "data",
+            "type": "Object",
+            "description": "An object with a `name` and `size` property."
+        },
+        {
+            "name": "buttonContainer",
+            "type": "HTMLElement",
+            "description": "The button corresponding to the respective file if the file was submitted to Fine Uploader using a tracked button."
+        },
+    ])
+}}
+
+{{ api_event("validateBatch", "onValidateBatch",
+""" This callback is always invoked before the default Fine Uploader validators
+execute.
+
+This event will not be called if you return `false` in your `validateBatch` event
+handler, or if the `stopOnFirstInvalidFile` validation option is `true` and
+the `validate` event handler has returned `false` for an item.
+
+A promise can be used if non-blocking work is required.
+Processing of this item is deferred until the promise is fullfilled.
+If a promise is returned, a call to `failure` is the same as returning `false`.
+
+A buttonContainer element will be passed as the last argument, provided the file was
+submitted using a Fine Uploader tracked button.
+
+The `fileOrBlobDataArray` object has two properties: `name` and `size`. The `size` property will be undefined for browsers without File API support.
+
+""",
+    [
+        {
+            "name": "fileOrBlobDataArray",
+            "type": "Array",
+            "description": "An array of `Objects` with `name` and `size` properties."
+        },
+        {
+            "name": "buttonContainer",
+            "type": "HTMLElement",
+            "description": "The button corresponding to the respective file if the file was submitted to Fine Uploader using a tracked button."
+        },
+    ])
+}}
+
+</div>
+
+{% endblock %}

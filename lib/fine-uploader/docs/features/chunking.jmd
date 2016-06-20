@@ -1,0 +1,87 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Chunking" %}
+{% block sidebar %}
+{{ api_links(['chunking'], None, ['uploadChunk', 'uploadChunkSuccess']) }}
+{% endblock %}
+
+{% block content %}
+{% markdown %}
+
+[chunking-success]: concurrent-chunking.html#server-side-implications
+[postmaxsize[: http://php.net/manual/en/ini.core.php#ini.post-max-size
+
+
+# Chunking & Partitioning {: .page-header }
+
+{{ alert("[Concurrent chunking](concurrent-chunking.html) is also supported!", "default", "Note:") }}
+
+With the advent of the File API, modern browsers now are capable of dividing
+files into "chunks". This feature is a crucial
+component to the [resume](resume.html) feature, and makes the [retry](retry.html) feature
+more useful.  File chunking also provides a workaround for request size limits
+put in place by browsers (e.g., Firefox and Chrome limit upload request
+sizes to about 4GB) and servers (e.g. [PHP's `post_max_size`][postmaxsize]).
+
+{{ alert("The default chunk size for Fine Uploader S3 is 5 MiB. If your file is smaller than that size,
+the upload will be _not_ be chunked.", "default", "Amazon S3 Specific Note:") }}
+
+Chunking is made possible by the File API, and is supported in Chrome, Firefox,
+Safari (iOS 6+ and OS X), Internet Explorer 10+, Opera 15+, and Microsoft Edge 13.10586+. Chunking is disabled in
+Android's stock browser due to a bug in the browser's ability to upload Blobs.
+
+Each chunk is sent as a separate request, and each chunked request
+should be acknowledged just as you would for a non-chunked request.
+The response to each chunked upload request is checked to determine success. If the
+server responds with a failure response, the uploader will attempt to retry,
+sending the file starting with the last failed chunk (if the `autoRetry` option
+is enabled).
+
+The details of chunking are largely invisible to your servers when using Fine Uploader S3 or Fine Uploader Azure. However
+if sending files to an endpoint you control, there are some details you must be aware of.
+
+
+## Traditional endpoints/servers (not S3 or Azure)
+
+The parameters on a chunked request will contain _at least_ the following information. Consider a sample file
+with named "NSA_PRISM.ppt" with a total file size of about 15 MB and a configured chunk size of 2 MB for the following example:
+
+```json
+{
+    "qquuid": "380d6893-b98b-4189-9938-93d265dfab5d",
+    "qqpartindex": 1,
+    "qqpartbyteoffset": 2000000,
+    "qqtotalfilesize": 15092995,
+    "qqtotalparts": 8,
+    "qqfilename": "NSA_PRISM.ppt",
+    "qqchunksize": 2000000
+}
+```
+
+{{ alert("`qqpartindex` is 0-indexed!", "info", "Note:") }}
+
+The `qqfilename` parameter is only sent along with chunked requests that are
+multipart encoded. This is because multipart encoded uploads report the filename
+in the Content-Disposition header as "blob" or the empty string when a `Blob`
+is included in the request. When a file is chunked, it is split up into `Blob` pieces.
+So, to determine the original filename when dealing with a multipart encoded request, you must read the `qqfilename` property.
+
+Since each chunk comes in as a separate request, the server should save the chunk
+to a temporary location. The filename should be saved using the `qquuid` parameter
+to guarantee there are no collisions with other chunks. After all chunks have
+been received for a file (i.e., `qqpartindex == qqtotalparts - 1`) then you should
+combine all the chunks (in order) to recreate the original file.
+
+Fine Uploader will also keep an eye out for a `reset` JSON property in the
+server's response. When this property is present Fine Uploader will
+fail the upload and then restart the upload with the first chunk again on the
+next attempt (assuming auto or manual retry has been enabled).
+
+
+### POST when all chunks have successfully uploaded
+
+You may specify a `chunking.success.endpoint` if you'd like your server to be called when all chunks
+have been successfully uploaded.  Note that this only applies to traditional endpoint.  See the section on
+the [chunking success call][chunking-success] for more details.
+
+{% endmarkdown %}
+{% endblock %}

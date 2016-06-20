@@ -1,0 +1,130 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "S3 Options" %}
+
+{% block sidebar %}
+<div id="sidebar-accordion" class="accordion">
+</div>
+{% endblock %}
+
+{% block js_head %}
+<script src="{{ ASSETS }}/js/sidebar.js"></script>
+{% endblock %}
+
+{% block js_footer %}
+<script>
+$(document).ready(function() {
+    console.log('herro')
+    renderOptionsSidebarNav(['s3-core', 's3-ui']);
+});
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="all-options">
+<div class="options-s3-core">
+{% markdown %}
+# Options <small>S3</small> {: .page-header }
+
+If you are using the S3 uploader, all of Fine Uploader's options are still
+present, and most of them still function the same way. However, some of the
+options are slightly different. This page will list any new or different options
+for the S3 uploader. Any option not listed here can be assumed to have the same
+behavior as the traditional endpoint uploader.
+
+## Core
+
+{% endmarkdown %}
+
+{{ api_parent_option("credentials", "credentials", "",
+    (
+        ("credentials.accessKey", "accessKey", "Temporary public AWS key", "String", "null",),
+        ("credentials.expiration", "expiration", "Expiration date for temporary credentials.  May be an ISO 8601 String or a `Date` object.", "String or Date", "null",),
+        ("credentials.secretKey", "secretKey", "Temporary secret AWS key", "String", "null",),
+        ("credentials.sessionToken", "sessionToken", "Session token associated with the temporary credentials.", "String", "null",),
+    )
+)}}
+
+{{
+alert("The [`chunking.paramNames` option](options.html#chunking) does **not** apply to S3.")
+}}
+{{ api_parent_option("chunking", "chunking", "",
+    (
+        ("chunking.partSize", "partSize", "The maximum size of each part, in bytes.", "Integer", "5242880",),
+    )
+)}}
+
+{{ api_parent_option("cors", "cors", "",
+    (
+        ("cors.allowXdr", "allowXdr", "Enables or disables cross-domain ajax calls (if [the `expected` property](options.html#cors.expected) is true) in IE9 and older.", "Boolean", "true",),
+    )
+)}}
+
+{{ api_parent_option("iframeSupport", "iframeSupport", "",
+    (
+        ("iframeSupport.localBlankPagePath", "localBlankPagePath", "This is required if you plan on supporting browsers that do not implement the File API, such as IE9 and older.  This must point to a blank page on the same origin/domain as the page hosting Fine Uploader.", "String", "null",),
+    )
+)}}
+
+{{ api_parent_option("objectProperties", "objectProperties", "",
+    (
+        ("objectProperties.acl", "acl", "This value corresponds to a [canned ACL](http://docs.aws.amazon.com/AmazonS3/latest/dev/ACLOverview.html#CannedACL)", "String", "private",),
+        ("objectProperties.bucket", "bucket", "Describes the name of the bucket used to house the file in S3.  This is required if the bucket cannot be determined by examining the endpoint (such as if you are using a CDN as an endpoint).  Possible values are a string representing the bucket name, or a function.  If the value is a function, Fine Uploader S3 will pass the associated file ID as a parameter when invoking your function. If the value is a function it may return a promise or a `String`.", "String or Function", "(assumes the bucket can be determined by parsing the endpoint string)",),
+        ("objectProperties.host", "host", "The hostname of your S3 bucket.  This is required if you are using version 4 signatures and sending files through a CDN. Possible values are a string representing the host name, or a function.  If the value is a function, Fine Uploader S3 will pass the associated file ID as a parameter when invoking your function. If the value is a function it may return a promise or a `String`.", "String or Function", "(uses the request endpoint to determine the hostname)"),
+        ("objectProperties.key", "key", "Describes the object key used to identify the file in your S3 bucket. Possible values are 'uuid', 'filename' or a function.  If the value is a function, Fine Uploader S3 will pass the associated file ID as a parameter when invoking your function. If the value is a function it may return one of a promise or a `String`.", "String or Function", "uuid",),
+        ("objectProperties.reducedRedundancy", "reducedRedundancy", "Set this to true if you would like to use the reduced redundancy storage class for all objects uploaded to S3.", "Boolean", "false",),
+        ("objectProperties.region", "region", "Version 4 signatures only: The [S3 region identifier](http://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region) for the target bucket.", "String", "us-east-1",),
+        ("objectProperties.serverSideEncryption", "serverSideEncryption", "Set this to true if you would like all uploaded files to be encrypted by AWS.", "Boolean", "false",),
+    )
+)}}
+
+{{
+alert("The [`resume.paramNames` option](options.html#resume) does **not** apply to S3.")
+}}
+
+{{
+alert("The [`request.customHeaders` option](options.html#request.customHeaders) does **not** apply to S3.")
+}}
+
+{{ api_parent_option("request", "request", "",
+    (
+        ("request.accessKey", "accessKey", "Your AWS public key. **NOT YOUR SECRET KEY**. Ignored if [`credentials`](#credentials) have been set.", "String", "null",),
+        ("request.clockDrift", "clockDrift", "Number of milliseconds to add to the `x-amz-date` header and the policy expiration date to account for clock drift on the browser/client machine.", "Long", "0",),
+        ("request.endpoint", "endpoint", "URL for your S3 bucket or the URL of a CDN that forwards the request to S3.  All valid bucket URLs documented by Amazon are supported, including custom domains.  SSL is also supported.  If you use a CDN address, be sure to specify the bucket via [the `objectProperties.bucket` option](#objectProperties.bucket).", "String", "null",),
+        ("request.filenameParam", "filenameParam", "Part of the parameter name that contains the name of the associated file which may differ from the key name. Prefixed with 'x-amz-meta-' by Fine Uploader.", "String", "qqfilename",),
+        ("request.params", "params", "Parameters passed along with each upload request.", "Object", "{}",),
+    )
+)}}
+
+{{ api_parent_option("signature", "signature", "",
+    (
+        ("signature.customHeaders", "customHeaders", "Additional headers sent along with each signature request.  If you declare a function as the value, the associated file's ID will be passed to your function when it is invoked.", "Object, Function", "{}",),
+        ("signature.endpoint", "endpoint", "The endpoint that Fine Uploader can use to send policy documents (HTML form uploads) or other strings to sign (REST requests) before sending requests off to S3.", "String", "null",),
+        ("signature.version", "version", "The AWS/S3 signature version to use. Currently supported values are `2` and `4`. Directly related to [`objectProperties.region`](#objectProperties.region).", "Integer", "2",),
+    )
+)}}
+
+{{ api_parent_option("uploadSuccess", "uploadSuccess", "",
+    (
+        ("uploadSuccess.customHeaders", "customHeaders", "Additional headers sent along with each signature request.", "Object", "{}",),
+        ("uploadSuccess.endpoint", "endpoint", "An endpoint that Fine Uploader should POST to when a file has been successfully uploaded to S3.", "String", "null",),
+        ("uploadSuccess.method", "method", "The request method (i.e. POST/PUT).", "String", "POST",),
+        ("uploadSuccess.params", "params", "Any additional parameters to attach to upload success file requests. Note that Fine Uploader will still send the bucket, key, filename, UUID, and etag (if available) as well", "Object", "{}",),
+    )
+)}}
+</div>
+
+
+<div class="options-s3-ui">
+{% markdown %}
+## UI
+{% endmarkdown %}
+
+{{ api_parent_option("failedUploadTextDisplay", "failedUploadTextDisplay", "",
+    (
+        ("failedUploadTextDisplay.mode", "mode", "You will most likely want to keep this at the default value of 'custom'. See the UI options documentation for more info on this option.", "String", "custom",),
+    )
+)}}
+</div>
+</div>
+
+{% endblock %}

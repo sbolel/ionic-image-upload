@@ -1,0 +1,117 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/Users/sinanbolel/.nvm/versions/node/v6.2.1/bin/node',
+1 verbose cli   '/Users/sinanbolel/.nvm/versions/node/v6.2.1/bin/npm',
+1 verbose cli   'publish' ]
+2 info using npm@3.9.5
+3 info using node@v6.2.1
+4 verbose publish [ '.' ]
+5 silly cache add args [ '.', null ]
+6 verbose cache add spec .
+7 silly cache add parsed spec Result {
+7 silly cache add   raw: '.',
+7 silly cache add   scope: null,
+7 silly cache add   name: null,
+7 silly cache add   rawSpec: '.',
+7 silly cache add   spec: '/Users/sinanbolel/dev/sbolel/image-upload',
+7 silly cache add   type: 'directory' }
+8 verbose addLocalDirectory /Users/sinanbolel/.npm/s3-image-uploader/1.0.1/package.tgz not in flight; packing
+9 verbose correctMkdir /Users/sinanbolel/.npm correctMkdir not in flight; initializing
+10 info lifecycle s3-image-uploader@1.0.1~prepublish: s3-image-uploader@1.0.1
+11 silly lifecycle s3-image-uploader@1.0.1~prepublish: no script for prepublish, continuing
+12 verbose tar pack [ '/Users/sinanbolel/.npm/s3-image-uploader/1.0.1/package.tgz',
+12 verbose tar pack   '/Users/sinanbolel/dev/sbolel/image-upload' ]
+13 verbose tarball /Users/sinanbolel/.npm/s3-image-uploader/1.0.1/package.tgz
+14 verbose folder /Users/sinanbolel/dev/sbolel/image-upload
+15 verbose addLocalTarball adding from inside cache /Users/sinanbolel/.npm/s3-image-uploader/1.0.1/package.tgz
+16 verbose correctMkdir /Users/sinanbolel/.npm correctMkdir not in flight; initializing
+17 silly cache afterAdd s3-image-uploader@1.0.1
+18 verbose afterAdd /Users/sinanbolel/.npm/s3-image-uploader/1.0.1/package/package.json not in flight; writing
+19 verbose correctMkdir /Users/sinanbolel/.npm correctMkdir not in flight; initializing
+20 verbose afterAdd /Users/sinanbolel/.npm/s3-image-uploader/1.0.1/package/package.json written
+21 silly publish { name: 's3-image-uploader',
+21 silly publish   version: '1.0.1',
+21 silly publish   description: 'JavaScript Image Uploader Library for use with Amazon S3',
+21 silly publish   license: 'MIT',
+21 silly publish   authors:
+21 silly publish    [ { name: 'Sinan Bolel',
+21 silly publish        email: 'sinanbolel@gmail.com',
+21 silly publish        url: 'https://sinanbolel.com' } ],
+21 silly publish   engines: { node: '>=5.7.0', npm: '>=3.9.5' },
+21 silly publish   main: 'src/image-uploader.js',
+21 silly publish   scripts: { install: 'grunt' },
+21 silly publish   repository:
+21 silly publish    { type: 'git',
+21 silly publish      url: 'git+https://github.com/sbolel/image-uploader.git' },
+21 silly publish   keywords: [ 'image', 'file', 'upload', 'aws', 's3' ],
+21 silly publish   homepage: 'https://github.com/sbolel/image-uploader',
+21 silly publish   issues: 'https://github.com/sbolel/image-uploader/issues',
+21 silly publish   dependencies: {},
+21 silly publish   devDependencies:
+21 silly publish    { 'aws-sdk': '^2.4.0',
+21 silly publish      grunt: '^1.0.1',
+21 silly publish      'grunt-contrib-concat': '^1.0.1' },
+21 silly publish   readme: '# Image Uploader\n\n[![Dependency Status][daviddm-image]][daviddm-url]\n[![License][license-image]][license-url]\n\n[daviddm-image]: https://img.shields.io/david/sbolel/image-uploader.svg?style=flat-square\n[daviddm-url]: https://david-dm.org/sbolel/image-uploader\n[license-image]: https://img.shields.io/npm/l/image-uploader.svg?style=flat-square\n[license-url]: https://github.com/sbolel/image-uploader/blob/master/LICENSE\n\nAn open source plugin for uploading image files to an S3 bucket.\n\n* Repository: https://github.com/sbolel/image-uploader\n\n## Getting Started\n\nInclude image-upload.bundle.min.js in your app:\n\n    <script src="lib/image-upload.min.js"></script>\n\nOr, to use this with the Amazon SDK included:\n\n    <script src="lib/image-upload.bundle.min.js"></script>\n\n#### Upload an image from a controller\n\nconst imageUpload = new ImageUpload();\nimageUpload.push(file, (data) => {\n  console.log(\'File uploaded Successfully\', $scope.file, data);\n  $scope.uploadUri = data.url;\n});\n\n## Configuring AWS S3\n\nYou are welcome to use the public S3 bucket that is preconfigured in `src/image-upload.js`. This public bucket will only accept files with JPG and PNG extensions up to 10MB in size. The files are automatically deleted after 24 hours.\n\nTo use your own Amazon S3 bucket, change the information in `src/image-upload.js` and uglify by running `grunt` in Terminal from the project directory.\n\n#### Setting up an AWS S3 Bucket for use with Ionic Image Upload\n\n<small>Below is a summary of [Uploading To S3 With AngularJS](http://www.cheynewallace.com/uploading-to-s3-with-angularjs/) by [Cheyne Wallace](http://www.cheynewallace.com/)</small>\n\nTo setup an S3 bucket for use with the Ionic Image Upload plugin, we need to:\n\n* Configure an AWS S3 bucket by creating a "public" IAM account:\n    - The IAM user will only have permission to PUT files into a particular AWS Bucket and nothing else.\n    - This users API key will be public -- anyone will be able to upload to your bucket if they use this key.\n* Configure the bucket to expire all objects within 24 hours.\n    - Even if someone uploads a 10 Gigabyte file, it will eventually be deleted.\n* Configure CORS to prevent uploading of content from anywhere other than your own domain.\n* Create a server to transfer uploaded files from the temporary bucket to a permanent bucket:\n    - When a new file is uploaded to this temporary bucket from the app;\n    - App will send the details of the file to the server;\n    - Server will perform any necessary transformations, encryption, resizing, or processing, and,\n    - Server will move the file into a permanent bucket.\n\n#### 1. Create the IAM User\n\n1. Open AWS console to the "Security Credentials" section. \n2. Create a new user and call it something like "app_public". \n3. Make sure you download the key information when it is presented, this is what we’ll be feeding into our app later to upload with.\n4. Under the permissions section, click "attach a new policy", then select the policy generator.\n5. Select Amazon S3 as the service and only select the `PutObject` action from the drop down list.\n6. The ARN is an Amazon Resource Name. This will look like `arn:aws:s3:::your_bucket_name`\n7. Click "add statement", then save and apply policy. \n\nNow your user has write-only access to the bucket.\n\nYour policy is going to look something like this;\n\n    {\n      "Version": "2012-10-17",\n      "Statement": [\n        {\n          "Sid": "Stmt126637111000",\n          "Effect": "Allow",\n          "Action": [\n            "s3:PutObject"\n          ],\n          "Resource": [\n            "arn:aws:s3:::your_bucket_name"\n          ]\n        }\n      ]\n    }\n\n#### 2. Configure CORS And Expiry On The Bucket\n\nGo to the AWS S3 console, click your bucket, then click the Properties button. You\'ll use the "Add CORS Configuration" button to configure your bucket to only allow PUT requests from particular origins.\n\nYou can use the following sample config -- edit to reflect your development, production and staging environments.\n\n    <?xml version="1.0" encoding="UTF-8"?>\n    <CORSConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">\n        <CORSRule>\n            <AllowedOrigin>http://localhost:3000</AllowedOrigin>\n            <AllowedOrigin>https://www.yourdomain.com</AllowedOrigin>\n            <AllowedOrigin>http://staging.yourdomain.com</AllowedOrigin>\n            <AllowedMethod>PUT</AllowedMethod>\n            <MaxAgeSeconds>3000</MaxAgeSeconds>\n            <ExposeHeader>x-amz-server-side-encryption</ExposeHeader>\n            <ExposeHeader>x-amz-request-id</ExposeHeader>\n            <ExposeHeader>x-amz-id-2</ExposeHeader>\n            <AllowedHeader>*</AllowedHeader>\n        </CORSRule>\n    </CORSConfiguration>\n\nExpire the objects in this bucket after some short period to prevent malicious use. Your server side code should handle moving and deleting valid files so you can assume those that are left after 24 hours are not meant to be there.\n\n1. From your S3 console, view a bucket, and then click Properties.\n2. Expand the "Lifecycle Rules" section and follow the prompts.\n3. Set the action to "`Permanently Delete Only`" and set it for `1` day -- this will delete any objects in the bucket that are older than 1 day permanently.\n\nNow, you\'re ready to use this bucket in your Ionic Image Upload app!\n',
+21 silly publish   readmeFilename: 'README.md',
+21 silly publish   gitHead: '76591178f6c3ebf6cb783be215ce41361e1205a8',
+21 silly publish   bugs: { url: 'https://github.com/sbolel/image-uploader/issues' },
+21 silly publish   _id: 's3-image-uploader@1.0.1',
+21 silly publish   _shasum: '336fda8fb8c7fb570d027a5ecbe2c20abafeee98',
+21 silly publish   _from: '.' }
+22 verbose getPublishConfig undefined
+23 silly mapToRegistry name s3-image-uploader
+24 silly mapToRegistry using default registry
+25 silly mapToRegistry registry https://registry.npmjs.org/
+26 silly mapToRegistry data Result {
+26 silly mapToRegistry   raw: 's3-image-uploader',
+26 silly mapToRegistry   scope: null,
+26 silly mapToRegistry   name: 's3-image-uploader',
+26 silly mapToRegistry   rawSpec: '',
+26 silly mapToRegistry   spec: 'latest',
+26 silly mapToRegistry   type: 'tag' }
+27 silly mapToRegistry uri https://registry.npmjs.org/s3-image-uploader
+28 verbose publish registryBase https://registry.npmjs.org/
+29 silly publish uploading /Users/sinanbolel/.npm/s3-image-uploader/1.0.1/package.tgz
+30 verbose request uri https://registry.npmjs.org/s3-image-uploader
+31 verbose request sending authorization for write operation
+32 info attempt registry request try #1 at 10:39:08 PM
+33 verbose request using bearer token for auth
+34 verbose request id 5c27f8065f94cd76
+35 http request PUT https://registry.npmjs.org/s3-image-uploader
+36 http 403 https://registry.npmjs.org/s3-image-uploader
+37 verbose headers { 'content-type': 'application/json',
+37 verbose headers   'cache-control': 'max-age=300',
+37 verbose headers   'content-length': '111',
+37 verbose headers   'accept-ranges': 'bytes',
+37 verbose headers   date: 'Mon, 20 Jun 2016 03:38:50 GMT',
+37 verbose headers   via: '1.1 varnish',
+37 verbose headers   connection: 'keep-alive',
+37 verbose headers   'x-served-by': 'cache-dfw1848-DFW',
+37 verbose headers   'x-cache': 'MISS',
+37 verbose headers   'x-cache-hits': '0',
+37 verbose headers   'x-timer': 'S1466393929.945541,VS0,VE895',
+37 verbose headers   vary: 'Accept-Encoding' }
+38 verbose request invalidating /Users/sinanbolel/.npm/registry.npmjs.org/s3-image-uploader on PUT
+39 error publish Failed PUT 403
+40 verbose stack Error: you do not have permission to publish "s3-image-uploader". Are you logged in as the correct user? : s3-image-uploader
+40 verbose stack     at makeError (/Users/sinanbolel/.nvm/versions/node/v6.2.1/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:264:12)
+40 verbose stack     at CachingRegistryClient.<anonymous> (/Users/sinanbolel/.nvm/versions/node/v6.2.1/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:252:14)
+40 verbose stack     at Request._callback (/Users/sinanbolel/.nvm/versions/node/v6.2.1/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:172:14)
+40 verbose stack     at Request.self.callback (/Users/sinanbolel/.nvm/versions/node/v6.2.1/lib/node_modules/npm/node_modules/request/request.js:200:22)
+40 verbose stack     at emitTwo (events.js:106:13)
+40 verbose stack     at Request.emit (events.js:191:7)
+40 verbose stack     at Request.<anonymous> (/Users/sinanbolel/.nvm/versions/node/v6.2.1/lib/node_modules/npm/node_modules/request/request.js:1067:10)
+40 verbose stack     at emitOne (events.js:101:20)
+40 verbose stack     at Request.emit (events.js:188:7)
+40 verbose stack     at IncomingMessage.<anonymous> (/Users/sinanbolel/.nvm/versions/node/v6.2.1/lib/node_modules/npm/node_modules/request/request.js:988:12)
+41 verbose statusCode 403
+42 verbose pkgid s3-image-uploader
+43 verbose cwd /Users/sinanbolel/dev/sbolel/image-upload
+44 error Darwin 15.5.0
+45 error argv "/Users/sinanbolel/.nvm/versions/node/v6.2.1/bin/node" "/Users/sinanbolel/.nvm/versions/node/v6.2.1/bin/npm" "publish"
+46 error node v6.2.1
+47 error npm  v3.9.5
+48 error code E403
+49 error you do not have permission to publish "s3-image-uploader". Are you logged in as the correct user? : s3-image-uploader
+50 error If you need help, you may report this error at:
+50 error     <https://github.com/npm/npm/issues>
+51 verbose exit [ 1, true ]
