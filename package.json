@@ -1,6 +1,6 @@
 {
   "name": "ionic-image-upload",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "An Ionic Plugin for Uploading Images to Amazon S3",
   "private": true,
   "license": "MIT",
@@ -23,14 +23,14 @@
   "devDependencies": {
     "bower": "^1.7.9",
     "grunt": "^1.0.1",
-    "grunt-contrib-uglify": "^1.0.1",
+    "grunt-contrib-uglify": "^2.0.0",
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.0",
     "gulp-minify-css": "^1.2.4",
     "gulp-rename": "^1.2.2",
     "gulp-sass": "^2.3.2",
     "gulp-util": "^3.0.7",
-    "shelljs": "^0.7.0"
+    "shelljs": "^0.7.4"
   },
   "cordovaPlugins": [
     "cordova-plugin-device",
