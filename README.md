@@ -1,11 +1,9 @@
 # Ionic Image Upload
 
-[ionic-image-upload]: https://github.com/sbolel/ionic-image-upload
-[image-uploader]: https://github.com/sbolel/image-uploader
+[![circle-ci][build-image]][build-url]
+[![js-standard][standard-image]][standard-url]
 
 An Ionic Starter App that demonstrates using the [image-uploader][image-uploader] open source plugin for uploading image files to an S3 bucket.
-
-Source code: https://github.com/sbolel/ionic-image-upload
 
 ## Getting Started
 
@@ -24,15 +22,15 @@ Or, with the Amazon SDK included:
 #### Upload an image from a controller
 
     .controller('UploadController', function ($scope){
-      var imageUploader = new ImageUploader();
-      $scope.file = {};
+      var imageUploader = new ImageUploader()
+      $scope.file = {}
       $scope.upload = function() {
         imageUploader.push($scope.file, function(data){
-          console.log('File uploaded Successfully', $scope.file, data);
-          $scope.uploadUri = data.url;
-          $scope.$digest();
-        });
-      };
+          console.log('File uploaded Successfully', $scope.file, data)
+          $scope.uploadUri = data.url
+          $scope.$digest()
+        })
+      }
     })
 
 #### Full Example 
@@ -41,7 +39,7 @@ Or, with the Amazon SDK included:
 
     <ion-content ng-controller="UploadController">
       <input class="bottom-marg-15" type="file" name="file" file="file">
-      <button class="button button-small button-full button-positive" ng-disabled="file.size&amp;&amp;false || uploadProgress&gt;0" ng-click="upload()" ng-cloak="">Upload</button>
+      <button class="button button-small button-full button-positive" ng-disabled="file.size&amp&ampfalse || uploadProgress&gt0" ng-click="upload()" ng-cloak="">Upload</button>
       <img class="fit" ng-if="uploadUri" ng-src="{{uploadUri}}">
       <a ng-href="{{uploadUri}}" ng-bind="uploadUri"></a>
     </ion-content>
@@ -56,19 +54,19 @@ Or, with the Amazon SDK included:
         },
         link: function(scope, el, attrs){
           el.bind('change', function(event){
-            var files = event.target.files;
-            var file = files[0];
+            var files = event.target.files
+            var file = files[0]
             if(file.size>0){
-              scope.file = file;
-              scope.$parent.file = file;
+              scope.file = file
+              scope.$parent.file = file
             } else {
-              scope.file = {};
-              scope.$parent.file = {}; 
+              scope.file = {}
+              scope.$parent.file = {} 
             }
-            scope.$apply();
-          });
+            scope.$apply()
+          })
         }
-      };
+      }
     })
 
 ## Configuring AWS S3
@@ -90,8 +88,8 @@ To setup an S3 bucket for use with the Ionic Image Upload plugin, we need to:
     - Even if someone uploads a 10 Gigabyte file, it will eventually be deleted.
 * Configure CORS to prevent uploading of content from anywhere other than your own domain.
 * Create a server to transfer uploaded files from the temporary bucket to a permanent bucket:
-    - When a new file is uploaded to this temporary bucket from the app;
-    - App will send the details of the file to the server;
+    - When a new file is uploaded to this temporary bucket from the app
+    - App will send the details of the file to the server
     - Server will perform any necessary transformations, encryption, resizing, or processing, and,
     - Server will move the file into a permanent bucket.
 
@@ -107,7 +105,7 @@ To setup an S3 bucket for use with the Ionic Image Upload plugin, we need to:
 
 Now your user has write-only access to the bucket.
 
-Your policy is going to look something like this;
+Your policy is going to look something like this:
 
     {
       "Version": "2012-10-17",
@@ -153,3 +151,14 @@ Expire the objects in this bucket after some short period to prevent malicious u
 3. Set the action to "`Permanently Delete Only`" and set it for `1` day -- this will delete any objects in the bucket that are older than 1 day permanently.
 
 Now, you're ready to use this bucket in your Ionic Image Upload app!
+
+
+<!-- Links -->
+
+[standard-image]: https://img.shields.io/badge/code%20style-standard-brightgreen.svg
+[standard-url]: http://standardjs.com/
+[build-image]: https://circleci.com/gh/sbolel/ionic-image-upload.svg?style=shield
+[build-url]: https://circleci.com/gh/sbolel/ionic-image-upload
+
+[ionic-image-upload]: https://github.com/sbolel/ionic-image-upload
+[image-uploader]: https://github.com/sbolel/image-uploader
