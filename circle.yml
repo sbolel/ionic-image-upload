@@ -1,0 +1,33 @@
+version: 2
+
+executorType: docker
+
+containerInfo:
+  - image: node:7.5.0
+    env:
+      - NODE_ENV=prod
+
+stages:
+
+  build:
+    workDir: ~/myApp
+
+    steps:
+      - type: checkout
+
+      - restore_cache:
+          keys:
+            - node_modules
+
+      - run:
+          name: Installing dependencies
+          command: npm install
+
+      - save_cache:
+          key: node_modules
+          paths:
+            - ~/myApp/node_modules
+
+      - run:
+          name: Running tests
+          command: npm test
